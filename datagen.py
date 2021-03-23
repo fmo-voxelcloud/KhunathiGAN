@@ -6,6 +6,7 @@ import torch.utils.data as data
 import random
 from PIL import Image
 from PIL import ImageFile
+import numpy as np
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 __all__ = [
@@ -39,7 +40,7 @@ class ListDataset(data.Dataset):
 
         # nimg = nimg.resize(self.size)
         nimg = self.transform(nimg)
-        return nimg
+        return nimg, np.array([0])
 
     def random_crop(self, img, size):
         # ratio = random.uniform(0.8, 1.2)

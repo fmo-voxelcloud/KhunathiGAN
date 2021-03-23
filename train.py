@@ -35,25 +35,25 @@ def train(args):
     device = torch.device("cuda:0" if (torch.cuda.is_available() and ngpu > 0) else "cpu")
 
     # dataloader
-    # transform = transforms.Compose([
-        # transforms.ToTensor(),
-        # transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-    # ])
-    # trainset = ListDataset(img_list, transform, (image_size, image_size))
-    # dataloader = torch.utils.data.DataLoader(trainset,
-        # batch_size=batch_size, shuffle=True, num_workers=num_workers)
+    transform = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+    ])
+    trainset = ListDataset(img_list, transform, (image_size, image_size))
+    dataloader = torch.utils.data.DataLoader(trainset,
+        batch_size=batch_size, shuffle=True, num_workers=num_workers)
 
-    dataroot = "./data/"
-    dataset = dset.ImageFolder(root=dataroot,
-                               transform=transforms.Compose([
-                                   transforms.Resize(image_size),
-                                   transforms.CenterCrop(image_size),
-                                   transforms.ToTensor(),
-                                   transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]))
-    dataloader = torch.utils.data.DataLoader(dataset,
-                                             batch_size=batch_size,
-                                             shuffle=True,
-                                             num_workers=num_workers)
+    # dataroot = "./data/"
+    # dataset = dset.ImageFolder(root=dataroot,
+                               # transform=transforms.Compose([
+                                   # transforms.Resize(image_size),
+                                   # transforms.CenterCrop(image_size),
+                                   # transforms.ToTensor(),
+                                   # transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]))
+    # dataloader = torch.utils.data.DataLoader(dataset,
+                                             # batch_size=batch_size,
+                                             # shuffle=True,
+                                             # num_workers=num_workers)
     print("Dataloader satisfied.")
 
     # Generator
@@ -156,15 +156,15 @@ if __name__ == "__main__":
     parser.add_argument("--image_list", default="./img.list", help="")
     parser.add_argument("--num_workers", default=4, help="")
     parser.add_argument("--batch_size", default=32, help="")
-    parser.add_argument("--image_size", default=128, help="")
+    parser.add_argument("--image_size", default=512, help="")
     parser.add_argument("--nc", default=3, help="")
     parser.add_argument("--nz", default=100, help="")
     parser.add_argument("--ngf", default=64, help="")
     parser.add_argument("--ndf", default=64, help="")
     parser.add_argument("--epochs", default=50, help="")
     parser.add_argument("--lr", default=0.0002, help="")
-    parser.add_argument("--output_dir", default="output_face", help="")
-    parser.add_argument("--save_every", default=200, help="")
+    parser.add_argument("--output_dir", default="output_zidi", help="")
+    parser.add_argument("--save_every", default=50, help="")
     parser.add_argument("--log_every", default=10000000000, help="")
     args = parser.parse_args()
 

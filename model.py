@@ -56,9 +56,19 @@ class Generator(nn.Module):
             nn.Conv2d(ngf, ngf, 3, 1, 1, bias=True),
             # state size: ngf x 64 x 64
 
+            nn.ConvTranspose2d(ngf, ngf, 4, 2, 1, bias=False),
+            nn.BatchNorm2d(ngf),
+            nn.ReLU(True),
+            # state size: ngf x 128 x 128
+
+            nn.ConvTranspose2d(ngf, ngf, 4, 2, 1, bias=False),
+            nn.BatchNorm2d(ngf),
+            nn.ReLU(True),
+            # state size: ngf x 256 x 256
+
             nn.ConvTranspose2d(ngf, nc, 4, 2, 1, bias=False),
             nn.Tanh()
-            # state size: nc x 128 x 128
+            # state size: nc x 512 x 512
         )
         self.apply(weights_init)
 
@@ -70,46 +80,64 @@ class Discriminator(nn.Module):
     def __init__(self, nc, ndf):
         super(Discriminator, self).__init__()
         self.main = nn.Sequential(
-            # input is (nc) x 128 x 128
+            # input is (nc) x 512 x 512
 
             # Conv2d(3x3, s1) -> Conv2d(3x3, s2) -> BN -> LeakyReLU
             nn.Conv2d(nc, ndf, 3, 1, 1, bias=False),
             nn.Conv2d(ndf, ndf, 3, 2, 1, bias=False),
             nn.LeakyReLU(0.2, inplace=True),
-            # state size. (ndf) x 64 x 64
+            # state size. (ndf) x 256 x 256
 
             nn.Conv2d(ndf, ndf * 2, 3, 1, 1, bias=False),
             nn.Conv2d(ndf * 2, ndf * 2, 3, 2, 1, bias=False),
             nn.BatchNorm2d(ndf * 2),
             nn.LeakyReLU(0.2, inplace=True),
-            # state size. (ndf*2) x 32 x 32
+            # state size. (ndf*2) x 128 x 128
 
             nn.Conv2d(ndf * 2, ndf * 4, 3, 1, 1, bias=False),
             nn.Conv2d(ndf * 4, ndf * 4, 3, 2, 1, bias=False),
             nn.BatchNorm2d(ndf * 4),
             nn.LeakyReLU(0.2, inplace=True),
-            # state size. (ndf*4) x 16 x 16
+            # state size. (ndf*4) x 64 x 64
 
             nn.Conv2d(ndf * 4, ndf * 8, 3, 1, 1, bias=False),
             nn.Conv2d(ndf * 8, ndf * 8, 3, 2, 1, bias=False),
             nn.BatchNorm2d(ndf * 8),
             nn.LeakyReLU(0.2, inplace=True),
-            # state size. (ndf*8) x 8 x 8
+            # state size. (ndf*8) x 32 x 32
 
             nn.Conv2d(ndf * 8, ndf * 16, 3, 1, 1, bias=False),
             nn.Conv2d(ndf * 16, ndf * 16, 3, 2, 1, bias=False),
             nn.BatchNorm2d(ndf * 16),
             nn.LeakyReLU(0.2, inplace=True),
-            # state size. (ndf*16) x 4 x 4
+            # state size. (ndf*16) x 16 x 16
 
-            nn.Conv2d(ndf * 16, 1, 3, 1, 1, bias=False),
+            nn.Conv2d(ndf * 16, ndf * 16, 3, 1, 1, bias=False),
+            nn.Conv2d(ndf * 16, ndf * 16, 3, 2, 1, bias=False),
+            nn.BatchNorm2d(ndf * 16),
+            nn.LeakyReLU(0.2, inplace=True),
+            # state size. (ndf*16) x 8 x 8
+
+            nn.Conv2d(ndf * 16, ndf * 32, 3, 1, 1, bias=False),
+            nn.Conv2d(ndf * 32, ndf * 32, 3, 2, 1, bias=False),
+            nn.BatchNorm2d(ndf * 32),
+            nn.LeakyReLU(0.2, inplace=True),
+            # state size. (ndf*32) x 4 x 4
+
             nn.AdaptiveAvgPool2d(1),
-            nn.Sigmoid()
+            # nn.Conv2d(ndf * 32, 1, 3, 1, 1, bias=False),
+            # nn.Linear(ndf * 32, 1),
+            # nn.Sigmoid()
         )
+        self.linear = nn.Linear(ndf * 32, 1)
         self.apply(weights_init)
 
     def forward(self, x):
-        return self.main(x)
+        x = self.main(x)
+        x = x.view(x.shape[0], -1)
+        x = self.linear(x)
+        x = torch.sigmoid(x)
+        return x
 
 
 if __name__ == "__main__":
@@ -120,5 +148,5 @@ if __name__ == "__main__":
 
     netD = Discriminator(3, 64)
     print(netD)
-    inputs2 = torch.randn([1, 3, 128, 128])
+    inputs2 = torch.randn([1, 3, 512, 512])
     print(netD(inputs2).shape)
