@@ -117,6 +117,8 @@ def train(args):
             D_G_z2 = output.mean().item()
             optimizerG.step()
 
+            itrs += 1
+
             # print log
             if (i % args.log_every == 0):
                 print('[%d/%d][%d/%d]\tLoss_D: %.4f\tLoss_G: %.4f\tD(x): %.4f\tD(G(z)): %.4f / %.4f'
@@ -134,7 +136,7 @@ def train(args):
                 fake.save(save_path)
 
             # adjust lr
-            if itrs != 0 and itrs % 5000 == 0 and itrs < 25000:
+            if itrs % 5000 == 0 and itrs < 25000:
                 print("Adjusting learning rate..")
                 lr *= 0.5
                 for param_group in optimizerD.param_groups:
@@ -148,24 +150,22 @@ def train(args):
                 torch.save(netG, './ckpt/netG_face.pkl')
                 torch.save(netD, './ckpt/netD_face.pkl')
 
-            itrs += 1
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--image_list", default="./img.list", help="")
-    parser.add_argument("--num_workers", default=4, help="")
-    parser.add_argument("--batch_size", default=32, help="")
-    parser.add_argument("--image_size", default=512, help="")
-    parser.add_argument("--nc", default=3, help="")
-    parser.add_argument("--nz", default=100, help="")
-    parser.add_argument("--ngf", default=64, help="")
-    parser.add_argument("--ndf", default=64, help="")
-    parser.add_argument("--epochs", default=50, help="")
-    parser.add_argument("--lr", default=0.0002, help="")
-    parser.add_argument("--output_dir", default="output_zidi", help="")
-    parser.add_argument("--save_every", default=50, help="")
-    parser.add_argument("--log_every", default=10000000000, help="")
+    parser.add_argument("--image_list", default="./img.list", type=str, help="")
+    parser.add_argument("--num_workers", default=4, type=int, help="")
+    parser.add_argument("--batch_size", default=32, type=int, help="")
+    parser.add_argument("--image_size", default=512, type=int, help="")
+    parser.add_argument("--nc", default=3, type=int, help="")
+    parser.add_argument("--nz", default=100, type=int, help="")
+    parser.add_argument("--ngf", default=64, type=int, help="")
+    parser.add_argument("--ndf", default=64, type=int, help="")
+    parser.add_argument("--epochs", default=50, type=int, help="")
+    parser.add_argument("--lr", default=0.0002, type=float, help="")
+    parser.add_argument("--output_dir", default="output_yifei", type=str, help="")
+    parser.add_argument("--save_every", default=10, type=int, help="")
+    parser.add_argument("--log_every", default=10000000000, type=int, help="")
     args = parser.parse_args()
 
     train(args)

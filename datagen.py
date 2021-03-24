@@ -28,7 +28,7 @@ class ListDataset(data.Dataset):
             raise ValueError
 
         self.img_nums = len(self.imgs)
-        self.sample_num = 200000
+        self.sample_num = 100000
 
     def __getitem__(self, idx):
         idx = random.randint(0, self.img_nums-1)
