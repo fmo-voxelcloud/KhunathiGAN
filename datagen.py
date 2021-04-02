@@ -9,9 +9,11 @@ from PIL import ImageFile
 import numpy as np
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
+
 __all__ = [
     'ListDataset'
 ]
+
 
 class ListDataset(data.Dataset):
     def __init__(self, img_list, transform, size):
@@ -30,17 +32,16 @@ class ListDataset(data.Dataset):
         self.img_nums = len(self.imgs)
         self.sample_num = 100000
 
+
     def __getitem__(self, idx):
         idx = random.randint(0, self.img_nums-1)
-        # img_path = self.imgs[idx]
-        # img = Image.open(img_path)
         img = self.imgs[idx]
 
         nimg = self.random_crop(img, self.size)
 
-        # nimg = nimg.resize(self.size)
         nimg = self.transform(nimg)
         return nimg, np.array([0])
+
 
     def random_crop(self, img, size):
         # ratio = random.uniform(0.8, 1.2)
@@ -50,6 +51,7 @@ class ListDataset(data.Dataset):
         nx, ny = random.randint(0, w - nw - 1), random.randint(0, h - nh - 1)
         nimg = img.crop([nx, ny, nx+nw, ny+nh])
         return nimg
+
 
     def crop(self, img, size):
         w, h = img.size
@@ -62,5 +64,7 @@ class ListDataset(data.Dataset):
 
         return nimg
 
+
     def __len__(self):
         return self.sample_num
+

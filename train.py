@@ -32,7 +32,7 @@ def train(args):
     beta1 = 0.5
     ngpu = 1
 
-    device = torch.device("cuda:0" if (torch.cuda.is_available() and ngpu > 0) else "cpu")
+    device = torch.device("cuda:{}".format(args.gpu) if (torch.cuda.is_available() and ngpu > 0) else "cpu")
 
     # dataloader
     transform = transforms.Compose([
@@ -80,6 +80,7 @@ def train(args):
     os.makedirs(os.path.dirname(model_save_path), exist_ok=True)
     os.makedirs('ckpt', exist_ok=True)
     print("start training")
+    print("output directory: {}".format(args.output_dir))
 
     for epoch in range(epochs):
         for i, data in tqdm(enumerate(dataloader, 0), total=len(dataloader), desc='Training'):
@@ -136,7 +137,7 @@ def train(args):
                 fake.save(save_path)
 
             # adjust lr
-            if itrs % 5000 == 0 and itrs < 25000:
+            if itrs % 10000 == 0 and itrs < 300001:
                 print("Adjusting learning rate..")
                 lr *= 0.5
                 for param_group in optimizerD.param_groups:
@@ -157,6 +158,7 @@ if __name__ == "__main__":
     parser.add_argument("--num_workers", default=4, type=int, help="")
     parser.add_argument("--batch_size", default=32, type=int, help="")
     parser.add_argument("--image_size", default=512, type=int, help="")
+    parser.add_argument("--gpu", default='0', type=str, help="")
     parser.add_argument("--nc", default=3, type=int, help="")
     parser.add_argument("--nz", default=100, type=int, help="")
     parser.add_argument("--ngf", default=64, type=int, help="")
